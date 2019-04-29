@@ -87,7 +87,7 @@ cd /etc/openvpn/easy-rsa/
 
 
 ./easyrsa import-req /root/client/pki/reqs/myname.req myname 
-将得到的orangleliu.req导入然后签约证书
+将得到的myname.req导入然后签约证书
 
 
 ./easyrsa sign client myname      用户签约，根据提示输入服务端的ca密码
