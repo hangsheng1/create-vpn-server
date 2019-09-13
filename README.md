@@ -30,8 +30,9 @@ yum install easy-rsa
 ​			
 
 ```
-cp -p /usr/share/doc/easy-rsa-3.0.3/vars.example /etc/openvpn/easy-rsa/vars
-cp -r /usr/share/easy-rsa/3.0.3/* /etc/openvpn/easy-rsa/
+mkdir /etc/openvpn/easy-rsa
+cp -p /usr/share/doc/easy-rsa-3.0.6/vars.example /etc/openvpn/easy-rsa/vars
+cp -r /usr/share/easy-rsa/3.0.6/* /etc/openvpn/easy-rsa/
 cp /usr/share/doc/openvpn-2.4.7/sample/sample-config-files/server.conf /etc/openvpn/
 ```
 
@@ -66,7 +67,7 @@ mkdir /home/client
 
 cd /home/client
 
-cp -r /usr/share/easy-rsa/3.0.3/* ./
+cp -r /usr/share/easy-rsa/3.0.6/* ./
 
 ./easyrsa init-pki
 
@@ -74,8 +75,8 @@ cp -r /usr/share/easy-rsa/3.0.3/* ./
 
 
 
-./easyrsa gen-req myname 
-(myname) 用自己的名字，需要创建一个密码  和 cn name，自己用的 需要记住
+./easyrsa gen-req client 
+(client) 用自己的名字，需要创建一个密码  和 cn name，自己用的 需要记住
 xxxx    xxxx    client
 
 ```
@@ -88,17 +89,16 @@ xxxx    xxxx    client
 cd /etc/openvpn/easy-rsa/
 
 
-./easyrsa import-req /root/client/pki/reqs/myname.req myname 
-将得到的myname.req导入然后签约证书
+./easyrsa import-req /home/client/pki/reqs/client.req client 
+将得到的client.req导入然后签约证书
 
 
-./easyrsa sign client myname      用户签约，根据提示输入服务端的ca密码
+./easyrsa sign client client      用户签约，根据提示输入服务端的ca密码
 
 
 ```
 
 ```
-/etc/openvpn/easy-rsa
 
 cp pki/ca.crt /etc/openvpn/
 
@@ -120,9 +120,9 @@ client 证书
 
 cp /etc/openvpn/easy-rsa/pki/ca.crt /home/client/
 
-cp pki/issued/myname.crt  /hoem/client/
+cp pki/issued/client.crt  /home/client/
 
-cp /home/client/pki/private/myname.key /home/client/
+cp /home/client/pki/private/client.key /home/client/
 
 cp /etc/openvpn/easy-rsa/ta.key /home/client/        ta.key 用于防御dos攻击,tun端口攻击
 ```
@@ -338,8 +338,9 @@ push "redirect-gateway def1 bypass-dhcp"
 # The addresses below refer to the public
 # DNS servers provided by opendns.com.
 # 配置DNS服务器
-push "dhcp-option DNS 208.67.222.222"
-push "dhcp-option DNS 208.67.220.220"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+push "dhcp-option DNS 114.114.114.114"
 
 # Uncomment this directive to allow different
 # clients to be able to "see" each other.
@@ -477,6 +478,10 @@ chmod 777 ./openvpn-startup.sh
 
 修改/etc/openvpn/firewall.sh
 
+```
+vim /etc/openvpn/firewall.sh
+```
+
 修改此行即可
 
 ```
@@ -486,6 +491,10 @@ PRIVATE=10.0.0.0/24  ->  PRIVATE=172.16.0.0/24
 
 
 修改openvpn-startup.sh
+
+```
+vim ./openvpn-startup.sh
+```
 
 ```
 #!/bin/sh
